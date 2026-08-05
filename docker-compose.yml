@@ -1,0 +1,47 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: asusalud_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: asusalud
+      POSTGRES_PASSWORD: asusalud
+      POSTGRES_DB: asusalud_inventory
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: .\backend
+      dockerfile: Dockerfile
+    container_name: asusalud_backend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://asusalud:asusalud@db:5432/asusalud_inventory?schema=public
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+
+  frontend:
+    build:
+      context: .\frontend
+      dockerfile: Dockerfile
+    container_name: asusalud_frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

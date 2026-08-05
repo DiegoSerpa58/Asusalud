@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MovementType {
+  ENTRY
+  EXIT
+  ADJUSTMENT
+}
+
+enum AlertType {
+  LOW_STOCK
+  EXPIRING_SOON
+  EXPIRED
+}
+
+model Medication {
+  id        String           @id @default(uuid()) @db.Uuid
+  sku       String           @unique @db.VarChar(40)
+  name      String           @db.VarChar(150)
+  createdAt DateTime         @default(now()) @map("created_at") @db.Timestamptz(6)
+  batches   InventoryBatch[]
+
+  @@map("medication")
+}
+
+model InventoryBatch {
+  id             String              @id @default(uuid()) @db.Uuid
+  medicationId   String              @map("medication_id") @db.Uuid
+  lot            String              @db.VarChar(60)
+  expirationDate DateTime            @map("expiration_date") @db.Date
+  stockCurrent   Int                 @default(0) @map("stock_current")
+  stockMin       Int                 @default(0) @map("stock_min")
+  version        Int                 @default(0)
+  createdAt      DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  medication     Medication          @relation(fields: [medicationId], references: [id])
+  movements      InventoryMovement[]
+  alerts         InventoryAlert[]
+
+  @@unique([medicationId, lot], map: "inventory_batch_medication_id_lot_key")
+  @@map("inventory_batch")
+}
+
+model InventoryMovement {
+  id             BigInt        @id @default(autoincrement())
+  batchId        String        @map("batch_id") @db.Uuid
+  type           MovementType
+  quantity       Int
+  reason         String?
+  balanceAfter   Int           @map("balance_after")
+  idempotencyKey String?       @unique @map("idempotency_key") @db.Uuid
+  createdBy      String        @map("created_by") @db.Uuid
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  batch          InventoryBatch @relation(fields: [batchId], references: [id])
+
+  @@map("inventory_movement")
+}
+
+model InventoryAlert {
+  id         BigInt        @id @default(autoincrement())
+  batchId    String        @map("batch_id") @db.Uuid
+  type       AlertType
+  message    String
+  isResolved Boolean       @default(false) @map("is_resolved")
+  createdAt  DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  batch      InventoryBatch @relation(fields: [batchId], references: [id])
+
+  @@map("inventory_alert")
+}
