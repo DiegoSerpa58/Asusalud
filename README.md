@@ -1,156 +1,325 @@
-# Asusalud - Gestión de Inventario de Farmacia
+# 💊 Asusalud — Sistema de Gestión de Inventario Farmacéutico
 
-Aplicación web full-stack orientada a consistencia fuerte para control de inventario farmacéutico.
+Aplicación web **Full Stack** desarrollada para la gestión de inventario farmacéutico, diseñada bajo principios de **consistencia fuerte**, trazabilidad e integridad de los datos.
 
-## Principios de diseño
+El sistema garantiza un manejo seguro del stock mediante transacciones ACID, bloqueo pesimista y un historial inmutable de movimientos de inventario.
 
-- **CAP:** prioridad **CP** (Consistencia + Tolerancia a Particiones).
-- **BD:** PostgreSQL con transacciones ACID y bloqueo pesimista para evitar sobregiros.
-- **Arquitectura:** Monolito Modular con enfoque Clean Architecture.
-- **Movimiento inmutable:** `inventory_movement` con trigger de bloqueo de `UPDATE/DELETE`.
+---
 
-## Stack
+# 📌 Características principales
 
-- **Frontend:** Next.js + TypeScript + Tailwind + Zustand
-- **Backend:** NestJS + TypeScript + Prisma
-- **Infra:** Docker + Docker Compose + PostgreSQL
+- Gestión completa de medicamentos.
+- Administración de lotes por medicamento.
+- Registro de entradas de inventario mediante transacciones.
+- Historial de movimientos **Append-Only**.
+- Alertas de vencimiento de medicamentos.
+- Arquitectura preparada para operaciones concurrentes.
+- API REST desarrollada con NestJS.
+- Frontend moderno construido con Next.js.
 
-## Estructura
+---
 
-```txt
-backend/
-  prisma/
-  src/
-    modules/
-      inventory/
-        application/
-        presentation/
-    shared/
-frontend/
-  src/
-    app/
-    features/
-      inventory/
-    shared/
-docker-compose.yml
+# 🏗 Arquitectura
+
+El proyecto sigue una arquitectura **Monolito Modular** basada en principios de **Clean Architecture**, permitiendo una clara separación de responsabilidades y facilitando el crecimiento del sistema.
+
+```text
+Frontend (Next.js)
+        │
+        ▼
+ REST API (NestJS)
+        │
+        ▼
+ Application Layer
+        │
+        ▼
+ Domain
+        │
+        ▼
+ Infrastructure
+        │
+        ▼
+ PostgreSQL
 ```
 
-## 🚀 Cómo iniciar el proyecto en local
+---
 
-Sigue estos pasos para ejecutar el proyecto localmente (frontend y backend en terminales separadas).
+# ⚙ Principios de Diseño
 
-### 1) Clonar el repositorio
+## Modelo CAP
+
+El sistema prioriza el modelo **CP (Consistency + Partition Tolerance)**.
+
+Esto significa que, ante escenarios de concurrencia o fallos de red, la prioridad siempre será mantener la consistencia del inventario, incluso si temporalmente se sacrifica la disponibilidad.
+
+## Consistencia del Inventario
+
+Cada operación que modifica existencias se ejecuta mediante:
+
+- Transacciones ACID.
+- Bloqueo pesimista (`SELECT ... FOR UPDATE`).
+- Validación por clave de idempotencia.
+- Registro inmutable del movimiento realizado.
+
+Con este enfoque se evita:
+
+- Sobregiros de inventario.
+- Condiciones de carrera.
+- Duplicidad de operaciones.
+- Estados inconsistentes.
+
+---
+
+# 🛠 Stack Tecnológico
+
+## Frontend
+
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Zustand
+
+## Backend
+
+- NestJS
+- TypeScript
+- Prisma ORM
+
+## Base de Datos
+
+- PostgreSQL
+
+## Infraestructura
+
+- Docker
+- Docker Compose
+
+---
+
+# 📁 Estructura del Proyecto
+
+```text
+Asusalud/
+│
+├── backend/
+│   ├── prisma/
+│   └── src/
+│       ├── modules/
+│       │   └── inventory/
+│       │       ├── application/
+│       │       ├── domain/
+│       │       ├── infrastructure/
+│       │       └── presentation/
+│       └── shared/
+│
+├── frontend/
+│   └── src/
+│       ├── app/
+│       ├── features/
+│       │   └── inventory/
+│       └── shared/
+│
+└── docker-compose.yml
+```
+
+---
+
+# 🚀 Ejecución Local
+
+## 1. Clonar el repositorio
+
 ```bash
 git clone https://github.com/DiegoSerpa58/Asusalud.git
 cd Asusalud
 ```
 
-### 2) Instalar dependencias
-> Si el proyecto está dividido en carpetas `frontend` y `backend`, instala en cada una:
+## 2. Instalar dependencias
+
+### Frontend
 
 ```bash
-# Frontend
 cd frontend
 npm install
+```
 
-# Backend
-cd ../backend
+### Backend
+
+```bash
+cd backend
 npm install
 ```
 
-### 3) Configurar variables de entorno
-Si existen archivos de ejemplo, crea tus `.env`:
+## 3. Configurar variables de entorno
+
+Si existen archivos de ejemplo, crea los archivos `.env`.
 
 ```bash
-# En frontend (si aplica)
-cp .env.example .env
-
-# En backend (si aplica)
 cp .env.example .env
 ```
 
-Edita los `.env` con tus valores (puerto, base de datos, llaves, etc.).
+Configura las variables correspondientes a:
 
-### 4) Iniciar el frontend (Terminal 1)
-```bash
-cd frontend
-npm run dev
-```
+- Base de datos.
+- Puerto.
+- URL del backend.
+- Variables adicionales del proyecto.
 
-### 5) Iniciar el backend (Terminal 2)
+## 4. Ejecutar el Backend
+
 ```bash
 cd backend
 npm run dev
 ```
 
-### 6) Verificar que esté corriendo
-- Frontend: abre `http://localhost:3000` o el puerto que muestre la terminal.
-- Backend: revisa en terminal el puerto/API (ej: `http://localhost:4000`).
-
----
-
-## 🛠️ Comandos alternativos (si `npm run dev` no existe)
-
-En algunos proyectos los scripts cambian. Prueba:
+Si el script no existe:
 
 ```bash
-npm start
-# o
 npm run start:dev
 ```
 
-Puedes revisar los scripts disponibles con:
+## 5. Ejecutar el Frontend
 
 ```bash
-npm run
+cd frontend
+npm run dev
 ```
 
+## 6. Acceder a la aplicación
 
-## Ejecución con Docker
+| Servicio | URL |
+| --------- | -------------------------- |
+| Frontend | http://localhost:3000 |
+| Backend | http://localhost:3001/api |
+
+---
+
+# 🐳 Ejecución con Docker
 
 ```bash
 docker compose up --build
 ```
 
-- Frontend: `http://localhost:3000`
-- Backend: `http://localhost:3001/api`
+| Servicio | URL |
+| --------- | -------------------------- |
+| Frontend | http://localhost:3000 |
+| Backend | http://localhost:3001/api |
 
-## Endpoints principales
+---
 
-- `POST /api/medications`
-- `GET /api/medications`
-- `PATCH /api/medications/:id`
-- `DELETE /api/medications/:id`
-- `POST /api/medications/batches`
-- `POST /api/inventory/entries` (entrada con transacción + lock)
-- `GET /api/alerts`
-- `POST /api/alerts/scan?daysToExpire=30`
+# 📡 API REST
 
-## Concurrencia de stock
+## Medicamentos
 
-En `POST /api/inventory/entries`, el backend ejecuta:
+| Método | Endpoint |
+| ------ | -------------------------- |
+| POST | `/api/medications` |
+| GET | `/api/medications` |
+| PATCH | `/api/medications/:id` |
+| DELETE | `/api/medications/:id` |
 
-1. Validación de idempotencia (`idempotency_key`).
-2. `SELECT ... FOR UPDATE` sobre el lote.
-3. Re-cálculo y actualización de stock dentro de la misma transacción.
-4. Registro append-only del movimiento.
+## Lotes
 
-Si hay conflicto, se aborta la transacción y no se persisten cambios parciales.
+| Método | Endpoint |
+| ------ | -------------------------- |
+| POST | `/api/medications/batches` |
 
-## Registro de progreso (2026-08-04)
-Hoy se realizaron cambios y funciones para avanzar la interfaz y la integración frontend↔backend:
+## Inventario
 
-- Backend: habilitado CORS en backend/src/main.ts para permitir peticiones desde http://localhost:3000.
-- Frontend (Next.js): añadido cliente HTTP y funciones en frontend/src/features/inventory/api/index.ts: fetchMedications, createMedication, createBatch, updateMedication, deleteMedication.
-- Estado (Zustand): actualizado store en frontend/src/features/inventory/store/inventory.store.ts para cargar medicamentos (meds) y mapear lotes a items mostrables.
-- UI: en frontend/src/app/inventory/page.tsx se añadieron:
-  - Carga automática de medicamentos y lotes.
-  - Formularios para crear medicamentos y lotes.
-  - Edición y eliminación de medicamentos (formulario de edición y botones de acciones).
-- Operaciones realizadas en el entorno de trabajo: los archivos modificados fueron guardados localmente. Se creó y posteriormente eliminó un repositorio Git local según preferencia del autor; los cambios permanecen en los archivos del proyecto.
+| Método | Endpoint |
+| ------ | -------------------------- |
+| POST | `/api/inventory/entries` |
 
-### Cómo continuar
-- Levantar servicios (Postgres, backend y frontend) y probar la UI en http://localhost:3000.
-- Próximo objetivo sugerido: CRUD de lotes (editar/eliminar) y mejor manejo de errores/UI (toasts/modales).
+## Alertas
 
-(Actualizar este registro por cada sesión para mantener un historial de avances.)
+| Método | Endpoint |
+| ------ | ---------------------------------------- |
+| GET | `/api/alerts` |
+| POST | `/api/alerts/scan?daysToExpire=30` |
+
+---
+
+# 🔒 Control de Concurrencia
+
+El endpoint `POST /api/inventory/entries` implementa un flujo transaccional para garantizar la consistencia de los datos.
+
+Proceso ejecutado:
+
+1. Validación de la clave de idempotencia.
+2. Inicio de la transacción.
+3. Bloqueo del lote mediante `SELECT ... FOR UPDATE`.
+4. Recalculo del stock.
+5. Actualización del inventario.
+6. Registro del movimiento en `inventory_movement`.
+7. Confirmación (`COMMIT`) de la transacción.
+
+Si ocurre un error:
+
+- Se ejecuta un `ROLLBACK`.
+- No se almacenan cambios parciales.
+- Se preserva la consistencia del inventario.
+
+---
+
+# 🛡 Inmutabilidad de Movimientos
+
+La tabla `inventory_movement` implementa el patrón **Append-Only**.
+
+Esto significa que:
+
+- Los registros nunca se actualizan.
+- Los registros nunca se eliminan.
+- Cada operación queda registrada permanentemente.
+
+Un trigger en PostgreSQL bloquea cualquier intento de:
+
+- `UPDATE`
+- `DELETE`
+
+garantizando la trazabilidad completa del inventario.
+
+---
+
+# 📅 Registro de Avances
+
+## 2026-08-04
+
+### Backend
+
+- Configuración de CORS para permitir solicitudes desde `http://localhost:3000`.
+- Integración entre frontend y backend.
+
+### Frontend
+
+- Implementación del cliente HTTP.
+- Funciones para:
+  - Obtener medicamentos.
+  - Crear medicamentos.
+  - Actualizar medicamentos.
+  - Eliminar medicamentos.
+  - Crear lotes.
+- Integración del estado global mediante Zustand.
+- Carga automática de medicamentos y lotes.
+- Formularios para creación y edición.
+- Acciones para actualización y eliminación de registros.
+
+---
+
+# 🚧 Próximas Mejoras
+- CRUD completo de lotes.
+- Registro de salidas de inventario.
+- Dashboard con métricas.
+- Búsqueda y filtros avanzados.
+- Toasts para notificaciones.
+- Modales de confirmación.
+- Pruebas unitarias.
+- Pruebas de integración.
+- Autenticación y autorización por roles.
+
+---
+
+# 👨‍💻 Autor
+
+**Diego Andrés Serpa**
+
+Proyecto desarrollado como parte del aprendizaje y fortalecimiento de competencias en desarrollo Full Stack, arquitectura de software, concurrencia, transacciones ACID y gestión de inventarios farmacéuticos.
