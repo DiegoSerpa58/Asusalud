@@ -35,6 +35,77 @@ frontend/
 docker-compose.yml
 ```
 
+## 🚀 Cómo iniciar el proyecto en local
+
+Sigue estos pasos para ejecutar el proyecto localmente (frontend y backend en terminales separadas).
+
+### 1) Clonar el repositorio
+```bash
+git clone https://github.com/DiegoSerpa58/Asusalud.git
+cd Asusalud
+```
+
+### 2) Instalar dependencias
+> Si el proyecto está dividido en carpetas `frontend` y `backend`, instala en cada una:
+
+```bash
+# Frontend
+cd frontend
+npm install
+
+# Backend
+cd ../backend
+npm install
+```
+
+### 3) Configurar variables de entorno
+Si existen archivos de ejemplo, crea tus `.env`:
+
+```bash
+# En frontend (si aplica)
+cp .env.example .env
+
+# En backend (si aplica)
+cp .env.example .env
+```
+
+Edita los `.env` con tus valores (puerto, base de datos, llaves, etc.).
+
+### 4) Iniciar el frontend (Terminal 1)
+```bash
+cd frontend
+npm run dev
+```
+
+### 5) Iniciar el backend (Terminal 2)
+```bash
+cd backend
+npm run dev
+```
+
+### 6) Verificar que esté corriendo
+- Frontend: abre `http://localhost:3000` o el puerto que muestre la terminal.
+- Backend: revisa en terminal el puerto/API (ej: `http://localhost:4000`).
+
+---
+
+## 🛠️ Comandos alternativos (si `npm run dev` no existe)
+
+En algunos proyectos los scripts cambian. Prueba:
+
+```bash
+npm start
+# o
+npm run start:dev
+```
+
+Puedes revisar los scripts disponibles con:
+
+```bash
+npm run
+```
+
+
 ## Ejecución con Docker
 
 ```bash
